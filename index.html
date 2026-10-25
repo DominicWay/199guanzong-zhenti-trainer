@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>管综真题答题卡训练系统</title>
+<style>
+:root{
+  --paper:#f2ede1;
+  --card:#fffdf6;
+  --ink:#221f18;
+  --ink-soft:#6b6252;
+  --line:#d9d0bd;
+  --line-strong:#b9ad94;
+  --red:#b23a2f;
+  --red-deep:#8f2c23;
+  --blue:#29465f;
+  --blue-soft:#e6edf3;
+  --green:#356b4c;
+  --amber:#a97a20;
+  --f-display:"STSong","SimSun","Songti SC",serif;
+  --f-body:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif;
+  --f-mono:Consolas,"SFMono-Regular","Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{background:var(--paper)}
+body{
+  font-family:var(--f-body);
+  color:var(--ink);
+  background:
+    repeating-linear-gradient(0deg,transparent 0 27px,rgba(120,105,80,.05) 27px 28px),
+    var(--paper);
+  min-height:100vh;
+  line-height:1.6;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 60px}
+
+/* ── 报头 ─────────────────────────── */
+.masthead{border-bottom:3px double var(--red);background:var(--paper);padding:26px 20px 14px;text-align:center}
+.mast-inner{max-width:1080px;margin:0 auto;position:relative}
+.seal{
+  position:absolute;left:0;top:4px;width:56px;height:56px;border:2px solid var(--red);
+  color:var(--red);font-family:var(--f-display);font-size:19px;line-height:1.15;
+  display:flex;align-items:center;justify-content:center;transform:rotate(-6deg);
+  letter-spacing:2px;border-radius:3px;
+}
+.masthead h1{font-family:var(--f-display);font-size:30px;letter-spacing:6px;font-weight:700}
+.masthead .sub{color:var(--ink-soft);font-size:13px;letter-spacing:3px;margin-top:6px}
+
+/* ── 通用 ─────────────────────────── */
+.card{background:var(--card);border:1px solid var(--line-strong);border-radius:2px;padding:22px 24px;box-shadow:0 1px 0 rgba(80,64,40,.12)}
+.view{margin-top:26px;animation:fade .18s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+h2.sec-title{font-family:var(--f-display);font-size:21px;letter-spacing:2px}
+.btn{
+  font-family:var(--f-body);font-size:14px;letter-spacing:2px;cursor:pointer;
+  padding:10px 22px;border-radius:2px;border:1px solid var(--ink);background:var(--card);color:var(--ink);
+  transition:background .12s,color .12s,border-color .12s;
+}
+.btn:hover{background:var(--ink);color:var(--card)}
+.btn.primary{background:var(--red);border-color:var(--red-deep);color:#fff}
+.btn.primary:hover{background:var(--red-deep)}
+.btn.ghost{border-color:var(--line-strong);color:var(--ink-soft)}
+.btn.ghost:hover{background:var(--ink-soft);color:var(--card);border-color:var(--ink-soft)}
+.btn.big{font-size:16px;padding:13px 34px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:disabled:hover{background:var(--card);color:var(--ink)}
+.mono{font-family:var(--f-mono)}
+
+/* ── 配置页 ───────────────────────── */
+.setup-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:22px;margin-top:22px}
+@media(max-width:860px){.setup-grid{grid-template-columns:1fr}}
+.field-label{font-family:var(--f-display);font-size:16px;letter-spacing:2px;border-left:4px solid var(--red);padding-left:10px;margin-bottom:14px}
+.year-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+@media(max-width:560px){.year-grid{grid-template-columns:repeat(4,1fr)}}
+.year-chip{
+  padding:10px 0;text-align:center;border:1px solid var(--line-strong);background:var(--card);
+  cursor:pointer;font-family:var(--f-mono);font-size:15px;border-radius:2px;transition:all .12s;
+}
+.year-chip:hover{border-color:var(--blue);color:var(--blue)}
+.year-chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.mod-card{
+  display:flex;align-items:flex-start;gap:12px;border:1px solid var(--line-strong);
+  padding:13px 15px;margin-bottom:10px;cursor:pointer;background:var(--card);border-radius:2px;transition:all .12s;
+}
+.mod-card:hover{border-color:var(--blue)}
+.mod-card[data-on="true"]{border-color:var(--blue);background:var(--blue-soft)}
+.mod-box{
+  width:18px;height:18px;flex:none;border:1.5px solid var(--ink-soft);border-radius:2px;margin-top:3px;
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;
+}
+.mod-card[data-on="true"] .mod-box{background:var(--blue);border-color:var(--blue)}
+.mod-name{font-size:15px;font-weight:600}
+.mod-desc{font-size:12px;color:var(--ink-soft)}
+.hint{font-size:12px;color:var(--ink-soft);margin-top:10px;line-height:1.7}
+.budget-list{margin-top:6px}
+.budget-item{border-bottom:1px dashed var(--line);padding:11px 0;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.budget-item:last-child{border-bottom:0}
+.budget-item .bi-name{font-size:13px}
+.budget-item .bi-val{font-family:var(--f-mono);font-size:14px;white-space:nowrap}
+.bi-val em{font-style:normal;color:var(--green)}
+.bi-val i{font-style:normal;color:var(--amber)}
+
+/* ── 答题页 ───────────────────────── */
+.exam-shell{position:relative}
+.seal-line{
+  position:absolute;left:-6px;top:0;bottom:0;width:34px;pointer-events:none;
+  border-right:1.5px dashed var(--line-strong);display:flex;align-items:center;justify-content:center;
+}
+.seal-line span{
+  writing-mode:vertical-rl;letter-spacing:8px;font-size:11px;color:var(--line-strong);
+  font-family:var(--f-display);
+}
+@media(max-width:960px){.seal-line{display:none}}
+.topbar{
+  position:sticky;top:0;z-index:20;background:var(--ink);color:#f4efe2;
+  padding:14px 18px;display:grid;grid-template-columns:1fr auto auto;gap:18px;align-items:center;
+  border-radius:2px;
+}
+@media(max-width:860px){.topbar{grid-template-columns:1fr;gap:12px}}
+.tb-year{font-family:var(--f-display);font-size:18px;letter-spacing:2px}
+.tb-mods{font-size:12px;opacity:.75;letter-spacing:1px}
+.tb-progress{font-size:12px;opacity:.85;margin-top:4px}
+.tb-progress b{font-family:var(--f-mono);font-size:14px}
+.tm-label{font-size:11px;letter-spacing:3px;opacity:.7;text-align:center}
+.tm-value{font-family:var(--f-mono);font-size:38px;line-height:1.1;text-align:center;letter-spacing:1px}
+.tm-value.over{color:#ff9b8f}
+.tb-actions{display:flex;gap:10px;flex-wrap:wrap}
+.tb-actions .btn{border-color:#f4efe2;background:transparent;color:#f4efe2;letter-spacing:2px}
+.tb-actions .btn:hover{background:#f4efe2;color:var(--ink)}
+.tb-actions .btn.primary{background:var(--red);border-color:var(--red)}
+.tb-actions .btn.primary:hover{background:#d1483c;color:#fff}
+.tb-actions .btn:disabled{opacity:.4}
+.tb-actions .btn:disabled:hover{background:transparent;color:#f4efe2}
+
+.budgets{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.bbar{background:var(--card);border:1px solid var(--line-strong);border-radius:2px;padding:12px 15px}
+.bbar-name{font-size:12px;color:var(--ink-soft);display:block;margin-bottom:7px}
+.bbar-track{position:relative;height:10px;background:#e9e2d1;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.bbar-fill{height:100%;width:0;background:var(--green);transition:width .3s linear,background .3s}
+.bbar-fill.warn{background:var(--amber)}
+.bbar-fill.over{background:var(--red)}
+.bbar-marks{position:relative;height:14px;margin-top:3px}
+.bbar-marks i{position:absolute;top:0;width:1px;height:6px;background:var(--line-strong)}
+.bbar-marks i.limit{background:var(--red)}
+.bbar-val{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:12px;color:var(--ink-soft);margin-top:2px}
+
+.sheet{margin-top:20px}
+.sec-block{background:var(--card);border:1px solid var(--line-strong);border-radius:2px;padding:18px 20px 8px;margin-bottom:18px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:4px}
+.sec-head h2{font-family:var(--f-display);font-size:19px;letter-spacing:3px}
+.sec-meta{font-size:12px;color:var(--ink-soft);font-family:var(--f-mono)}
+.ds-legend{font-size:12px;color:var(--ink-soft);line-height:1.8;padding:10px 0 2px;border-bottom:1px dashed var(--line)}
+.qrow{display:flex;align-items:center;gap:14px;padding:9px 2px;border-bottom:1px dashed var(--line)}
+.qrow:last-child{border-bottom:0}
+.qrow.active{background:#eef3f8;border-left:3px solid var(--blue);padding-left:11px;border-radius:2px}
+.qnum{
+  width:38px;flex:none;height:30px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--f-mono);font-size:15px;border:1px solid var(--line-strong);border-radius:2px;background:#faf6ec;
+}
+.qrow.done .qnum{background:var(--ink);color:#f4efe2;border-color:var(--ink)}
+.opts{display:flex;gap:9px;flex-wrap:wrap}
+.opt{
+  width:36px;height:36px;border-radius:50%;border:1.5px solid var(--line-strong);background:var(--card);
+  font-family:var(--f-mono);font-size:14px;cursor:pointer;color:var(--ink-soft);transition:all .12s;
+}
+.opt:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-1px)}
+.opt[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:700}
+.marks{display:flex;gap:6px;flex-wrap:wrap}
+.guess-btn{
+  height:28px;padding:0 10px;border-radius:999px;border:1.5px dashed var(--line-strong);background:transparent;
+  font-family:var(--f-body);font-size:12px;cursor:pointer;color:var(--ink-soft);transition:all .12s;white-space:nowrap;
+}
+.guess-btn:hover{border-color:var(--amber);color:var(--amber)}
+.guess-btn[aria-pressed="true"]{background:#fdf3d8;border-style:solid;border-color:var(--amber);color:var(--amber);font-weight:700}
+.focus-btn{
+  height:28px;padding:0 12px;border-radius:2px;border:1px solid var(--blue);background:transparent;
+  font-family:var(--f-body);font-size:12px;cursor:pointer;color:var(--blue);white-space:nowrap;transition:all .12s;
+}
+.focus-btn:hover{background:var(--blue);color:#fff}
+.focus-btn[data-mode="resume"]{border-style:dashed}
+.focus-btn[data-mode="skip"]{background:var(--blue);color:#fff}
+.qtime{margin-left:auto;font-family:var(--f-mono);font-size:12px;color:var(--ink-soft);white-space:nowrap;display:flex;gap:10px;align-items:center}
+.qrow.done .qtime{color:var(--blue)}
+.qrow.active .qtime{color:var(--blue);font-weight:700}
+.qtime .skip-cnt{color:var(--amber);font-size:11px}
+.tb-focus{font-size:12px;opacity:.85;margin-top:4px;color:#9fc3e8}
+
+.pause-veil{
+  position:fixed;inset:0;z-index:50;background:rgba(34,31,24,.82);display:flex;
+  align-items:center;justify-content:center;flex-direction:column;gap:18px;color:#f4efe2;
+}
+.pause-veil .pv-t{font-family:var(--f-display);font-size:26px;letter-spacing:8px}
+.pause-veil .pv-s{opacity:.7;font-size:13px;letter-spacing:2px}
+
+/* ── 结果页 ───────────────────────── */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:18px}
+.sum-card{background:var(--card);border:1px solid var(--line-strong);border-radius:2px;padding:16px 18px}
+.sum-card .sc-name{font-size:13px;color:var(--ink-soft);letter-spacing:1px}
+.sum-card .sc-big{font-family:var(--f-mono);font-size:30px;margin:6px 0 2px}
+.sum-card .sc-sub{font-size:12px;color:var(--ink-soft);line-height:1.9}
+.tag{display:inline-block;padding:1px 9px;border-radius:2px;font-size:12px;letter-spacing:1px;border:1px solid}
+.tag.good{color:var(--green);border-color:var(--green)}
+.tag.warn{color:var(--amber);border-color:var(--amber)}
+.tag.bad{color:var(--red);border-color:var(--red)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:16px}
+.tbl th,.tbl td{border:1px solid var(--line-strong);padding:7px 9px;text-align:center}
+.tbl th{background:var(--ink);color:#f4efe2;font-weight:600;letter-spacing:1px}
+.tbl td.num{font-family:var(--f-mono)}
+.tbl tr.ok td.res{color:var(--green);font-weight:700}
+.tbl tr.bad td.res{color:var(--red);font-weight:700}
+.tbl tr.none td.res{color:var(--ink-soft)}
+.tbl tr.bad td.mine{background:#f9e4e0}
+.tbl tr.ok td.mine{background:#e6efe8}
+.res-actions{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap;align-items:center}
+.export-note{font-size:12px;color:var(--ink-soft);margin-top:10px;line-height:1.8}
+
+/* ── 其他 ─────────────────────────── */
+.banner{
+  background:#fdf3d8;border:1px solid var(--amber);border-left:5px solid var(--amber);
+  padding:14px 18px;margin-top:22px;border-radius:2px;font-size:13px;display:flex;
+  justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.foot{margin-top:40px;border-top:1px solid var(--line-strong);padding-top:16px;font-size:12px;color:var(--ink-soft);line-height:2}
+.toast{
+  position:fixed;left:50%;bottom:34px;transform:translateX(-50%);z-index:99;
+  background:var(--ink);color:#f4efe2;padding:12px 22px;border-radius:2px;font-size:13px;
+  letter-spacing:1px;box-shadow:0 6px 24px rgba(0,0,0,.25);max-width:80vw;
+}
+.empty-tip{text-align:center;color:var(--ink-soft);padding:20px;font-size:13px}
+.modal{position:fixed;inset:0;z-index:80;background:rgba(34,31,24,.55);display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-box{background:var(--card);border:1px solid var(--line-strong);border-top:4px solid var(--red);border-radius:2px;padding:26px 28px;max-width:420px;width:100%}
+.mb-title{font-family:var(--f-display);font-size:19px;letter-spacing:2px}
+.mb-text{font-size:13px;color:var(--ink-soft);margin:12px 0 20px;line-height:1.9}
+.mb-actions{display:flex;gap:10px;justify-content:flex-end}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="mast-inner">
+    <div class="seal">真题</div>
+    <h1>管综真题答题卡训练系统</h1>
+    <p class="sub">199 管理类综合能力 · 选择题答题卡模拟 · 分题计时训练</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="banner" id="restore-banner" hidden>
+    <div id="restore-text"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn" id="btn-restore">继续作答</button>
+      <button class="btn ghost" id="btn-discard">放弃重来</button>
+    </div>
+  </div>
+
+  <!-- ═══ 配置 ═══ -->
+  <section class="view" id="view-setup">
+    <div class="setup-grid">
+      <div>
+        <div class="card">
+          <div class="field-label">一、选择真题年份（单选）</div>
+          <div class="year-grid" id="year-grid"></div>
+          <p class="hint">内置 2010—2026 年共 17 套真题参考答案，仅用于对答案，不含题面。</p>
+        </div>
+        <div class="card" style="margin-top:22px">
+          <div class="field-label">二、选择练习模块（可多选）</div>
+          <div id="mod-list"></div>
+          <p class="hint">规则：【问题求解】与【条件充分性判断】必须同时选（同属数学基础，题号 1—25）；【逻辑推理】题号 26—55。</p>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="field-label">三、时间目标（自动叠加）</div>
+          <div class="budget-list" id="budget-preview"></div>
+          <p class="hint">计时按「正在思考的题」累积：点「跳过」本题暂停计时并转到下一题，点「继续」回到本题接着计时，选出答案（含再点同一答案）即停。全局「暂停」则所有题一起冻结。另有「猜的 / 凭推理 / 凭感觉」标注按钮（三选一，与选项独立），用于标记瞎蒙的答案及蒙答案的依据。</p>
+          <button class="btn primary big" id="btn-start" style="width:100%;margin-top:18px">开始答题</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 答题 ═══ -->
+  <section class="view exam-shell" id="view-exam" hidden>
+    <div class="seal-line"><span>密封线内不要答题</span></div>
+    <div class="topbar">
+      <div>
+        <div class="tb-year" id="tb-year">2010 年真题</div>
+        <div class="tb-mods" id="tb-mods"></div>
+        <div class="tb-progress">已答 <b id="p-answered">0</b> / <span id="p-total">55</span> 题</div>
+        <div class="tb-focus" id="tb-focus">当前思考中：—</div>
+      </div>
+      <div>
+        <div class="tm-label">已用时</div>
+        <div class="tm-value mono" id="tm-value">00:00</div>
+      </div>
+      <div class="tb-actions">
+        <button class="btn" id="btn-pause">暂停计时</button>
+        <button class="btn primary" id="btn-submit">交卷</button>
+      </div>
+    </div>
+    <div class="budgets" id="budget-bars"></div>
+    <div class="sheet" id="sheet"></div>
+  </section>
+
+  <!-- ═══ 结果 ═══ -->
+  <section class="view" id="view-result" hidden>
+    <div class="card">
+      <h2 class="sec-title" id="res-title">练习报告</h2>
+      <div class="sum-grid" id="res-summary"></div>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <div class="field-label">逐题对照（我的答案 vs 参考答案 · 含标注与本题用时）</div>
+      <div style="overflow-x:auto"><table class="tbl" id="res-table"></table></div>
+    </div>
+    <div class="res-actions">
+      <button class="btn primary big" id="btn-export">导出 xlsx 报告</button>
+      <button class="btn" id="btn-again">再做一次</button>
+      <button class="btn ghost" id="btn-back">返回选题</button>
+    </div>
+    <p class="export-note" id="export-note"></p>
+  </section>
+
+  <div class="foot">
+    说明：① 本工具只做答题卡与计时，题目请使用纸质真题或 PDF。② 计时按「正在思考的题」累积：每题的思考可断续多段，「跳过」停本题计时并让下一题开始计时，「继续」让本题接着计时；选出答案（含再点同一答案）即本题计时停止，之后点「继续」可再研究、再点答案再停。③ 本题用时 = 该题各思考段之和；总用时 = 全部题思考用时之和（同一时刻只有一题在计时）。全局「暂停」所有题一起冻结。④ 「猜的 / 凭推理 / 凭感觉」为独立标注按钮（三选一、再点取消），不影响 A—E 选项。⑤ 交卷自动导出 xlsx 报告（选题信息、答案对照、逐题用时与总用时）。
+  </div>
+</div>
+
+<div class="pause-veil" id="pause-veil" hidden>
+  <div class="pv-t">计时已暂停</div>
+  <div class="pv-s">休息一下，回来继续</div>
+  <button class="btn primary big" id="btn-resume">继续答题</button>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<div class="modal" id="confirm-modal" hidden>
+  <div class="modal-box">
+    <div class="mb-title" id="cf-title">确认交卷？</div>
+    <div class="mb-text" id="cf-text"></div>
+    <div class="mb-actions">
+      <button class="btn ghost" id="cf-cancel">再想想</button>
+      <button class="btn primary" id="cf-ok">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   1. 参考答案数据（源自《真题答案.xlsx》）
+   ═══════════════════════════════════════════════ */
+const ANSWERS = {"2010":{"ps":"DCCADEBBBDACBBE","ds":"AACDDEDACB","lr":"DACEDBDEDBACCAADBAECADADCDBECE"},"2011":{"ps":"BACBDEBDEDEDADC","ds":"AEDBCBADDC","lr":"DBAEADEABCBEACBCEBBCDCCEDBCDED"},"2012":{"ps":"CACBBEEACDADBEB","ds":"DCABDEDDCA","lr":"ECDDDDEEBCEBCAAADEEABDEACDBDBB"},"2013":{"ps":"CEBCDEDEBEBCDAC","ds":"ABEAADCBCD","lr":"ABECEDECBBBEBCCAEDAEEBBAABABBD"},"2014":{"ps":"EBBBEBDDECEADDC","ds":"ABCAAACCDC","lr":"EABEEABBBEBCBECEDDCDDEAEDBAACA"},"2015":{"ps":"ECDACDBCAAEEBAD","ds":"ADBBCEBCDC","lr":"BBEEDDBEEAEAADACBABDBCDECCBDBD"},"2016":{"ps":"DCECBBDDEEDACDE","ds":"BCACEACBAD","lr":"DCDEDADDEBDAEEECADECBDBBADACCB"},"2017":{"ps":"EEBBCBEDDBDBAAC","ds":"DEACBBACCA","lr":"ABDEECECCDAEBDBCEEDDBDCCABDDAC"},"2018":{"ps":"BAABEBCCECECDDA","ds":"BDDADADCED","lr":"DDDACDDECDCADCDDCCDDABCEDECCAB"},"2019":{"ps":"CBCDEDDBEBEDCDA","ds":"CDACDBECAA","lr":"AAECDBEDEBACDABECECBBEBDDCDBCD"},"2020":{"ps":"DABBEBCBCEBCDED","ds":"BCECEDEAAA","lr":"CACDCBECABEACDCAECCBEAACEEEBDA"},"2021":{"ps":"BCABBDDDACEBEDD","ds":"CCCADEAECD","lr":"DBCCACADBBAEBBECDEDABBDECCCCAC"},"2022":{"ps":"DCAEAACBBDCDECE","ds":"BACBCDBECA","lr":"CEADEBBEDAECBDEAACCBCECDACBEDA"},"2023":{"ps":"DBDADCACBBCEBED","ds":"DCCAEEACCB","lr":"BBCDABAABCDEAACDECEBDECBCBDEEC"},"2024":{"ps":"ECDBBCCBBCADEAE","ds":"CDCACBADCE","lr":"DDADCCDBEACEEAEDBDBACBEDBEACAC"},"2025":{"ps":"BACCBBEEDADADCC","ds":"DCEBDAABEC","lr":"DCCEDECEEABBCCCADBBEABBDADACEC"},"2026":{"ps":"EDCBACACBDDBDEA","ds":"CCEDBACBDA","lr":"BCBDCABDCBACDEBDADEEDEACACEBDE"}};
+
+const YEARS = Object.keys(ANSWERS).sort();
+const OPTS = ["A","B","C","D","E"];
+const MARKS = [
+  {key:"guess", label:"猜的",   short:"猜",   title:"标记：这个答案是瞎猜的，不是做出来的"},
+  {key:"infer", label:"凭推理", short:"推理", title:"标记：这个答案是凭推理蒙的，没有十足把握"},
+  {key:"feel",  label:"凭感觉", short:"感觉", title:"标记：这个答案是凭感觉选的，没有十足把握"}
+];
+function markLabel(k){ const m=MARKS.find(x=>x.key===k); return m?m.label:""; }
+function markShort(k){ const m=MARKS.find(x=>x.key===k); return m?m.short:""; }
+const MODS = {
+  ps:{key:"ps",name:"问题求解",from:1,to:15,score:3,group:"math",idx:"一"},
+  ds:{key:"ds",name:"条件充分性判断",from:16,to:25,score:3,group:"math",idx:"二"},
+  lr:{key:"lr",name:"逻辑推理",from:26,to:55,score:2,group:"logic",idx:"三"}
+};
+const LS_SESSION="mgzb_answer_session_v1";
+const LS_SETTINGS="mgzb_answer_settings_v1";
+
+/* ═══════════════════════════════════════════════
+   2. 状态
+   ═══════════════════════════════════════════════ */
+let S = null;                 // 当前练习会话
+let tickHandle = null;
+let lastSaveAt = 0;
+
+function normMods(arr){
+  // 固定模块顺序 ps → ds → lr，避免历史设置的乱序影响题号与区块顺序
+  return ["ps","ds","lr"].filter(k=>(arr||[]).includes(k));
+}
+function defaultSettings(){
+  return { year:YEARS[0], mods:["ps","ds","lr"] };
+}
+function loadSettings(){
+  try{
+    const st=Object.assign(defaultSettings(), JSON.parse(localStorage.getItem(LS_SETTINGS)||"{}"));
+    st.mods=normMods(st.mods);
+    return st;
+  }
+  catch(e){ return defaultSettings(); }
+}
+function newSession(year, mods){
+  return {
+    year, mods:normMods(mods), answers:{}, guesses:{}, focus:null, currentQ:null,
+    segs:[], segTotal:{},
+    timer:{accum:0, runStart:0, running:false, lastSeen:0, pauseCount:0, pauseTotal:0},
+    startedAt:null, submittedAt:null
+  };
+}
+function saveSession(){
+  if(!S) return;
+  S.timer.lastSeen = Date.now();
+  localStorage.setItem(LS_SESSION, JSON.stringify(S));
+  lastSaveAt = Date.now();
+}
+function loadSession(){
+  try{ const raw=localStorage.getItem(LS_SESSION); return raw?JSON.parse(raw):null; }
+  catch(e){ return null; }
+}
+function clearSession(){ localStorage.removeItem(LS_SESSION); }
+
+/* ═══════════════════════════════════════════════
+   3. 计时
+   ═══════════════════════════════════════════════ */
+function startTimer(){
+  const t=S.timer;
+  t.running=true; t.runStart=Date.now();
+  if(!S.startedAt) S.startedAt=new Date().toISOString();
+}
+function pauseTimer(auto){
+  const t=S.timer;
+  if(!t.running) return;
+  t.accum += Date.now()-t.runStart;
+  t.running=false;
+  t.pauseCount += auto?0:1;
+  saveSession();
+}
+function resumeTimer(){
+  const t=S.timer;
+  if(t.running) return;
+  t.running=true; t.runStart=Date.now();
+  saveSession();
+}
+
+/* 每题思考段：单题独占计时（同一时刻只有一题在计时） */
+function startSeg(q){
+  S.focus={q, start:Date.now()};
+  saveSession();
+}
+function closeSeg(){
+  if(!S.focus) return;
+  const d=Math.max(0,Date.now()-S.focus.start);
+  S.focus=null;
+  return d;
+}
+function qMs(q){
+  // 只有当前思考中的题才叠加实时段，避免把别的题的时间串进来
+  const st=(S.focus&&S.focus.q===q)? (Date.now()-S.focus.start) : 0;
+  return (S.segTotal&&S.segTotal[q]?S.segTotal[q]:0)+st;
+}
+function qTotalMs(){
+  if(!S) return 0;
+  let sum=0;
+  Object.keys(S.segTotal||{}).forEach(k=>{sum+=S.segTotal[k];});
+  return sum+(S.focus?Date.now()-S.focus.start:0);
+}
+function segRows(){
+  const out=[]; let t=0;
+  (S.segs||[]).forEach(s=>{
+    out.push({q:s.q, stage:s.stage, dur:s.d, at:t});
+    t+=s.d;
+  });
+  return out;
+}
+function moduleTimeMs(){
+  const out={ps:0,ds:0,lr:0};
+  for(const s of (S.segs||[])){
+    const m=qModule(s.q);
+    if(m) out[m]+=s.d;
+  }
+  if(S.focus){
+    const m=qModule(S.focus.q);
+    if(m) out[m]+=Date.now()-S.focus.start;
+  }
+  return out;
+}
+function fmtClock(ms){
+  const s=Math.max(0,Math.floor(ms/1000));
+  const h=Math.floor(s/3600), m=Math.floor(s%3600/60), ss=s%60;
+  const p=n=>String(n).padStart(2,"0");
+  return h>0 ? h+":"+p(m)+":"+p(ss) : p(m)+":"+p(ss);
+}
+function fmtDate(iso){
+  if(!iso) return "—";
+  const d=new Date(iso), p=n=>String(n).padStart(2,"0");
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+}
+
+/* ═══════════════════════════════════════════════
+   4. 时间预算
+   ═══════════════════════════════════════════════ */
+function budgetsOf(mods){
+  const hasMath=mods.includes("ps"), hasLogic=mods.includes("lr");
+  return {
+    math: hasMath ? {limit:60,target:55} : null,
+    logic: hasLogic ? {limit:60,target:50} : null,
+    total: {limit:(hasMath?60:0)+(hasLogic?60:0), target:(hasMath?55:0)+(hasLogic?50:0)}
+  };
+}
+function verdict(minutes, b){
+  if(minutes<=b.target) return {text:"优秀",cls:"good"};
+  if(minutes<=b.limit) return {text:"达标",cls:"warn"};
+  return {text:"超时",cls:"bad"};
+}
+
+/* ═══════════════════════════════════════════════
+   5. 作答与每题思考段
+   ═══════════════════════════════════════════════ */
+function answerQuestion(q, a){
+  // 选出答案即本题计时停止（再点同一答案会开启并结束一个新的思考段）
+  if(S.focus && S.focus.q===q){
+    const d=closeSeg();
+    if(d!==undefined){
+      S.segs.push({q, stage:S.answers[q]?"研究":"思考", d});
+      S.segTotal[q]=(S.segTotal[q]||0)+d;
+    }
+    S.currentQ=null;
+    if(S.timer.running) startNextQ(q);
+  }
+  S.answers[q]=a;
+  renderQRow(q);
+  renderQTime(q);
+  renderProgress();
+  renderFocus();
+  saveSession();
+}
+function toggleFocus(q){
+  // 单题思考的 跳过 / 继续
+  if(!S.timer.running){ showToast("计时已暂停，请先点「继续答题」"); return; }
+  if(S.focus && S.focus.q===q){
+    const d=closeSeg();
+    if(d!==undefined){
+      S.segs.push({q, stage:S.answers[q]?"研究":"思考", d});
+      S.segTotal[q]=(S.segTotal[q]||0)+d;
+    }
+    S.currentQ=null;
+    startNextQ(q);
+  }else{
+    if(S.focus){
+      const held=S.focus.q;
+      const d=closeSeg();
+      if(d!==undefined){
+        S.segs.push({q:held, stage:S.answers[held]?"研究":"思考", d});
+        S.segTotal[held]=(S.segTotal[held]||0)+d;
+      }
+    }
+    S.currentQ=q;
+    startSeg(q);
+  }
+  renderAllQRows();
+  renderFocus();
+  saveSession();
+}
+function startNextQ(fromQ){
+  // 跳过/答完后自动把计时交给下一题（按卷面顺序，取最近的未答未计时题；没有则无计时题）
+  const all=[];
+  S.mods.forEach(k=>{ for(let q=MODS[k].from;q<=MODS[k].to;q++) all.push(q); });
+  const cands=all.filter(x=>x!==fromQ && !S.answers[x]);
+  let best=null;
+  for(const x of cands){ if(x>fromQ){ best=x; break; } }
+  if(best===null) best = cands.length? cands[0] : null;
+  if(best!==null){
+    S.currentQ=best;
+    startSeg(best);
+  }else{
+    S.currentQ=null;
+    closeSeg();
+  }
+}
+function toggleGuess(q, mark){
+  // 标注三选一：再点同一标注 = 取消；点另一标注 = 换成该标注（与 A—E 选项独立）
+  S.guesses[q] = S.guesses[q]===mark ? null : mark;
+  if(!S.guesses[q]) delete S.guesses[q];
+  renderQRow(q);
+  saveSession();
+}
+function qModule(q){
+  for(const k in MODS){ if(q>=MODS[k].from && q<=MODS[k].to) return k; }
+  return null;
+}
+function fmtDur(ms){
+  return ms===null||ms===undefined ? "—" : fmtClock(ms);
+}
+
+/* ═══════════════════════════════════════════════
+   6. 渲染：配置页
+   ═══════════════════════════════════════════════ */
+let selYear=null, selMods=[];
+
+function renderSetup(){
+  // 仅首次读取本地设置；后续渲染以内存中的 selYear/selMods 为准
+  if(selYear===null){
+    const st=loadSettings();
+    selYear = st.year && ANSWERS[st.year] ? st.year : YEARS[0];
+    selMods = st.mods.filter(m=>MODS[m]);
+    if(selMods.length===0) selMods=["ps","ds","lr"];
+  }
+
+  const yg=document.getElementById("year-grid");
+  yg.innerHTML="";
+  YEARS.forEach(y=>{
+    const b=document.createElement("button");
+    b.className="year-chip"; b.textContent=y;
+    b.setAttribute("aria-pressed", String(y===selYear));
+    b.addEventListener("click",()=>{
+      selYear=y;
+      [...yg.children].forEach(c=>c.setAttribute("aria-pressed",String(c===b)));
+      persistSel();
+    });
+    yg.appendChild(b);
+  });
+
+  const ml=document.getElementById("mod-list");
+  ml.innerHTML="";
+  Object.values(MODS).forEach(m=>{
+    const div=document.createElement("div");
+    div.className="mod-card";
+    div.dataset.on=String(selMods.includes(m.key));
+    div.innerHTML='<div class="mod-box">'+(selMods.includes(m.key)?"✓":"")+'</div>'+
+      '<div><div class="mod-name">【'+m.name+'】</div>'+
+      '<div class="mod-desc">第 '+m.from+'—'+m.to+' 题 · 每题 '+m.score+' 分 · 共 '+((m.to-m.from+1)*m.score)+' 分</div></div>';
+    div.addEventListener("click",()=>toggleMod(m.key));
+    ml.appendChild(div);
+  });
+
+  renderBudgetPreview();
+}
+function toggleMod(key){
+  // 问题求解与条件充分性判断联动：必须同时选
+  const keys = (key==="ps"||key==="ds") ? ["ps","ds"] : [key];
+  const on = !selMods.includes(key);
+  keys.forEach(k=>{
+    if(on && !selMods.includes(k)) selMods.push(k);
+    if(!on) selMods=selMods.filter(x=>x!==k);
+  });
+  if(selMods.length===0){ selMods=[key]; if(key==="ps"||key==="ds") selMods=["ps","ds"]; }
+  selMods=normMods(selMods);
+  persistSel();
+  renderSetup();
+}
+function persistSel(){
+  localStorage.setItem(LS_SETTINGS, JSON.stringify({year:selYear, mods:normMods(selMods)}));
+}
+function renderBudgetPreview(){
+  const b=budgetsOf(selMods);
+  const rows=[];
+  if(b.math) rows.push(["数学（问题求解+条件充分性判断）","上限 <i>60min</i> · 优秀 <em>55min</em>"]);
+  if(b.logic) rows.push(["逻辑推理","上限 <i>60min</i> · 优秀 <em>50min</em>"]);
+  rows.push(["合计","上限 <i>"+b.total.limit+"min</i> · 优秀 <em>"+b.total.target+"min</em>"]);
+  rows.push(["题量", selMods.reduce((n,k)=>n+(MODS[k].to-MODS[k].from+1),0)+" 题"]);
+  document.getElementById("budget-preview").innerHTML =
+    rows.map(r=>'<div class="budget-item"><span class="bi-name">'+r[0]+'</span><span class="bi-val">'+r[1]+'</span></div>').join("");
+}
+
+/* ═══════════════════════════════════════════════
+   7. 渲染：答题页
+   ═══════════════════════════════════════════════ */
+function renderExam(){
+  document.getElementById("tb-year").textContent=S.year+" 年真题";
+  document.getElementById("tb-mods").textContent=S.mods.map(k=>"【"+MODS[k].name+"】").join(" ");
+  const total=S.mods.reduce((n,k)=>n+(MODS[k].to-MODS[k].from+1),0);
+  document.getElementById("p-total").textContent=total;
+
+  // 预算条
+  const b=budgetsOf(S.mods);
+  const bars=[];
+  if(b.math) bars.push({key:"math",name:"数学 问题求解+条件充分性判断",b:b.math});
+  if(b.logic) bars.push({key:"logic",name:"逻辑推理",b:b.logic});
+  bars.push({key:"total",name:"合计",b:b.total});
+  document.getElementById("budget-bars").innerHTML=bars.map(x=>{
+    const pctTarget=Math.min(100,x.b.target/x.b.limit*100);
+    return '<div class="bbar"><span class="bbar-name">'+x.name+'</span>'+
+      '<div class="bbar-track"><div class="bbar-fill" id="fill-'+x.key+'"></div>'+
+      '<div class="bbar-marks"><i class="target" style="left:'+pctTarget+'%"></i><i class="limit" style="left:100%"></i></div></div>'+
+      '<div class="bbar-val"><span id="val-'+x.key+'">00:00</span><span>优秀 '+x.b.target+'min / 上限 '+x.b.limit+'min</span></div></div>';
+  }).join("");
+
+  // 答题卡
+  const sheet=document.getElementById("sheet");
+  sheet.innerHTML=S.mods.map(k=>{
+    const m=MODS[k];
+    let rows="";
+    for(let q=m.from;q<=m.to;q++){
+      rows+='<div class="qrow" id="qrow-'+q+'">'+
+        '<span class="qnum">'+q+'</span>'+
+        '<div class="opts" role="group" aria-label="第'+q+'题">'+
+        OPTS.map(a=>'<button class="opt" data-q="'+q+'" data-a="'+a+'" aria-pressed="false">'+a+'</button>').join("")+
+        '</div>'+
+        '<div class="marks" role="group" aria-label="第'+q+'题标注">'+
+        MARKS.map(m=>'<button class="guess-btn" data-q="'+q+'" data-mark="'+m.key+'" aria-pressed="false" title="'+m.title+'">'+m.label+'</button>').join("")+
+        '</div>'+
+        '<button class="focus-btn" data-q="'+q+'" data-mode="resume">继续</button>'+
+        '<span class="qtime" id="qtime-'+q+'">—</span></div>';
+    }
+    const legend = k==="ds" ? '<p class="ds-legend">选项含义：A 条件(1)充分、(2)不充分；B 条件(2)充分、(1)不充分；C 两条件单独不充分、联合充分；D 两条件各自都充分；E 两条件单独不充分、联合也不充分</p>' : "";
+    return '<div class="sec-block"><div class="sec-head"><h2>'+m.idx+'、'+m.name+'</h2>'+
+      '<span class="sec-meta">第 '+m.from+'—'+m.to+' 题 · 每题 '+m.score+' 分</span></div>'+legend+rows+'</div>';
+  }).join("");
+
+  sheet.querySelectorAll(".opt").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(!S.timer.running){ showToast("计时已暂停，请先点「继续答题」"); return; }
+      answerQuestion(parseInt(btn.dataset.q,10), btn.dataset.a);
+    });
+  });
+  sheet.querySelectorAll(".guess-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>toggleGuess(parseInt(btn.dataset.q,10), btn.dataset.mark));
+  });
+  sheet.querySelectorAll(".focus-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>toggleFocus(parseInt(btn.dataset.q,10)));
+  });
+
+  // 恢复已答/已标注/计时状态
+  renderAllQRows();
+  renderProgress();
+  renderFocus();
+}
+function renderQRow(q){
+  const row=document.getElementById("qrow-"+q);
+  if(!row) return;
+  const a=S.answers[q];
+  row.classList.toggle("done",!!a);
+  row.classList.toggle("active",!!(S.focus && S.focus.q===q));
+  row.querySelectorAll(".opt").forEach(b=>{
+    b.setAttribute("aria-pressed",String(b.dataset.a===a));
+  });
+  row.querySelectorAll(".guess-btn").forEach(gb=>{
+    gb.setAttribute("aria-pressed",String(S.guesses[q]===gb.dataset.mark));
+  });
+  const fb=row.querySelector(".focus-btn");
+  if(fb){
+    const isActive = !!(S.focus && S.focus.q===q);
+    // 活动题：跳过（暂停本题，交给下一题）；非活动题：继续（把计时拿到本题）
+    fb.textContent = isActive ? "跳过" : "继续";
+    fb.dataset.mode = isActive ? "skip" : "resume";
+    fb.title = isActive ? "暂停本题思考，转到下一题" : "回到本题继续思考（其他题的计时自动暂停）";
+  }
+}
+function renderAllQRows(){
+  const all=[];
+  S.mods.forEach(k=>{ for(let q=MODS[k].from;q<=MODS[k].to;q++) all.push(q); });
+  all.forEach(q=>{ renderQRow(q); renderQTime(q); });
+}
+function renderQTime(q){
+  const el=document.getElementById("qtime-"+q);
+  if(!el) return;
+  const m=qMs(q);
+  const isActive=!!(S.focus && S.focus.q===q);
+  const skipCnt=(S.segs||[]).filter(s=>s.q===q && s.stage==="思考").length-1;
+  el.innerHTML = (m>0||isActive) ? "用时 "+fmtClock(m)+(isActive?" ●":"")+
+    (skipCnt>0 ? ' <span class="skip-cnt">·跳过'+skipCnt+'次</span>' : "") : "—";
+}
+function renderFocus(){
+  const el=document.getElementById("tb-focus");
+  if(el){
+    el.textContent = S.focus ? ("当前思考中：第 "+S.focus.q+" 题") : "当前思考中：无（点任意题的「跳过/继续」开始计时）";
+  }
+}
+function renderProgress(){
+  const n=Object.keys(S.answers).length;
+  const el=document.getElementById("p-answered");
+  if(el) el.textContent=n;
+}
+function renderTimer(){
+  if(!S) return;
+  const e=qTotalMs();
+  const tv=document.getElementById("tm-value");
+  if(tv){
+    tv.textContent=fmtClock(e);
+    const b=budgetsOf(S.mods);
+    tv.classList.toggle("over", e/60000 > b.total.limit);
+  }
+  const b=budgetsOf(S.mods);
+  const mt=moduleTimeMs();
+  const upd=(key,minutes,bg)=>{
+    const fill=document.getElementById("fill-"+key), val=document.getElementById("val-"+key);
+    if(!fill) return;
+    const ratio=Math.min(1, minutes/bg.limit);
+    fill.style.width=(ratio*100)+"%";
+    fill.classList.toggle("warn", minutes>bg.target && minutes<=bg.limit);
+    fill.classList.toggle("over", minutes>bg.limit);
+    if(val) val.textContent=fmtClock(minutes*60000)+" / 上限 "+bg.limit+"min";
+  };
+  if(b.math) upd("math",(mt.ps+mt.ds)/60000,b.math);
+  if(b.logic) upd("logic",mt.lr/60000,b.logic);
+  upd("total",e/60000,b.total);
+  if(S.focus) renderQTime(S.focus.q);
+}
+
+/* ═══════════════════════════════════════════════
+   8. 交卷与成绩
+   ═══════════════════════════════════════════════ */
+function markCounts(rs){
+  const c={};
+  MARKS.forEach(m=>{ c[m.key]=rs.filter(r=>r.mark===m.key).length; });
+  return c;
+}
+function markSummary(rs){
+  const c=markCounts(rs);
+  return MARKS.filter(m=>c[m.key]>0).map(m=>m.label+" "+c[m.key]).join(" / ");
+}
+function computeResult(){
+  const rows=[];
+  S.mods.forEach(k=>{
+    const m=MODS[k];
+    for(let q=m.from;q<=m.to;q++){
+      const mine=S.answers[q]||"";
+      const ref=ANSWERS[S.year][k][q-m.from];
+      const segs=(S.segs||[]).filter(s=>s.q===q);
+      rows.push({
+        q, mod:k, modName:m.name, mine, ref,
+        mark: S.guesses[q]||"",
+        guessed: !!S.guesses[q],
+        ok: mine? (mine===ref) : null,
+        score:m.score, got: mine===ref ? m.score : 0,
+        dur: qMs(q),
+        segs: segs.length,
+        skips: Math.max(0, segs.filter(s=>s.stage==="思考").length-1)
+      });
+    }
+  });
+  rows.sort((a,b)=>a.q-b.q);
+  const byMod={};
+  Object.keys(MODS).forEach(k=>{
+    if(!S.mods.includes(k)) return;
+    const rs=rows.filter(r=>r.mod===k);
+    byMod[k]={
+      name:MODS[k].name, n:rs.length,
+      answered:rs.filter(r=>r.mine).length,
+      correct:rs.filter(r=>r.ok).length,
+      guessed: rs.filter(r=>r.guessed).length,
+      guessedCorrect: rs.filter(r=>r.guessed && r.ok).length,
+      marks: markCounts(rs),
+      timeMs: rs.reduce((s,r)=>s+r.dur,0),
+      got:rs.reduce((s,r)=>s+r.got,0),
+      max:rs.length*MODS[k].score
+    };
+  });
+  const total={
+    n:rows.length,
+    answered:rows.filter(r=>r.mine).length,
+    correct:rows.filter(r=>r.ok).length,
+    guessed:rows.filter(r=>r.guessed).length,
+    guessedCorrect:rows.filter(r=>r.guessed && r.ok).length,
+    marks: markCounts(rows),
+    timeMs: rows.reduce((s,r)=>s+r.dur,0),
+    got:rows.reduce((s,r)=>s+r.got,0),
+    max:rows.reduce((s,r)=>s+r.score,0)
+  };
+  return {rows, byMod, total, timeMs:qTotalMs(), modTime:moduleTimeMs()};
+}
+function renderResult(res){
+  const b=budgetsOf(S.mods);
+  const mt=res.modTime;
+  document.getElementById("res-title").textContent =
+    S.year+" 年真题 · "+S.mods.map(k=>MODS[k].name).join(" + ")+" · 练习报告";
+
+  const cards=[];
+  const tMin=res.timeMs/60000;
+  const v=verdict(tMin,b.total);
+  cards.push(card("总思考用时", fmtClock(res.timeMs),
+    "目标：优秀 "+b.total.target+"min / 上限 "+b.total.limit+"min<br>判定：<span class=\"tag "+v.cls+"\">"+v.text+"</span><br>总分："+res.total.got+" / "+res.total.max+"（正确 "+res.total.correct+"/"+res.total.n+"，未作答 "+(res.total.n-res.total.answered)+"，标注 "+res.total.guessed+" 题："+(markSummary(res.rows)||"—")+"，对 "+res.total.guessedCorrect+"）"));
+  if(b.math){
+    const mm=(mt.ps+mt.ds)/60000, vv=verdict(mm,b.math);
+    const g=res.byMod.ps.got+res.byMod.ds.got, mx=res.byMod.ps.max+res.byMod.ds.max;
+    const mathRows=res.rows.filter(r=>r.mod==="ps"||r.mod==="ds");
+    const mathMarked=mathRows.filter(r=>r.mark);
+    cards.push(card("数学（问题求解+条件充分性判断）", fmtClock(mm*60000),
+      "优秀 "+b.math.target+"min / 上限 "+b.math.limit+"min · <span class=\"tag "+vv.cls+"\">"+vv.text+"</span><br>得分："+g+" / "+mx+"（正确 "+(res.byMod.ps.correct+res.byMod.ds.correct)+"/"+(res.byMod.ps.n+res.byMod.ds.n)+"，标注 "+mathMarked.length+" 题："+(markSummary(mathRows)||"—")+"）"));
+  }
+  if(b.logic){
+    const lm=mt.lr/60000, vv=verdict(lm,b.logic);
+    const lrRows=res.rows.filter(r=>r.mod==="lr");
+    const lrMarked=lrRows.filter(r=>r.mark);
+    cards.push(card("逻辑推理", fmtClock(lm*60000),
+      "优秀 "+b.logic.target+"min / 上限 "+b.logic.limit+"min · <span class=\"tag "+vv.cls+"\">"+vv.text+"</span><br>得分："+res.byMod.lr.got+" / "+res.byMod.lr.max+"（正确 "+res.byMod.lr.correct+"/"+res.byMod.lr.n+"，标注 "+lrMarked.length+" 题："+(markSummary(lrRows)||"—")+"）"));
+  }
+  document.getElementById("res-summary").innerHTML=cards.join("");
+
+  const t=document.getElementById("res-table");
+  t.innerHTML =
+    "<tr><th>题号</th><th>模块</th><th>我的答案</th><th>标注</th><th>参考答案</th><th>判定</th><th>分值</th><th>得分</th><th>本题用时</th><th>思考段数</th></tr>"+
+    res.rows.map(r=>{
+      const cls = r.ok===null ? "none" : (r.ok?"ok":"bad");
+      const judge = r.ok===null ? "未作答" : (r.ok?"正确":"错误");
+      return "<tr class=\""+cls+"\"><td class=\"num\">"+r.q+"</td><td>"+r.modName+"</td>"+
+        "<td class=\"mine num\">"+(r.mine||"—")+"</td>"+
+        "<td class=\"num\">"+(r.mark?markShort(r.mark):"—")+"</td>"+
+        "<td class=\"num\">"+r.ref+"</td>"+
+        "<td class=\"res\">"+judge+"</td><td class=\"num\">"+r.score+"</td><td class=\"num\">"+r.got+"</td>"+
+        "<td class=\"num\">"+fmtDur(r.dur)+"</td>"+
+        "<td class=\"num\">"+(r.segs>0?r.segs+" 段"+(r.skips>0?"·跳过"+r.skips+"次":""):"—")+"</td></tr>";
+    }).join("");
+}
+function card(name,big,sub){
+  return '<div class="sum-card"><div class="sc-name">'+name+'</div><div class="sc-big">'+big+'</div><div class="sc-sub">'+sub+'</div></div>';
+}
+
+/* ═══════════════════════════════════════════════
+   9. xlsx 导出（内嵌最小 XLSX 生成器，离线可用）
+   ═══════════════════════════════════════════════ */
+/* XLSX-BEGIN */
+const CRC_TABLE=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})();
+function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=CRC_TABLE[(c^u8[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function zipStore(files){
+  const enc=new TextEncoder(), parts=[], central=[];
+  let offset=0;
+  const dosTime=(12<<11)|(0<<5)|0, dosDate=((2026-1980)<<9)|(1<<5)|1;
+  files.forEach(f=>{
+    const name=enc.encode(f.name), data=f.data, crc=crc32(data);
+    const lh=new Uint8Array(30+name.length), lv=new DataView(lh.buffer);
+    lv.setUint32(0,0x04034b50,true); lv.setUint16(4,20,true); lv.setUint16(6,0x0800,true);
+    lv.setUint16(8,0,true); lv.setUint16(10,dosTime,true); lv.setUint16(12,dosDate,true);
+    lv.setUint32(14,crc,true); lv.setUint32(18,data.length,true); lv.setUint32(22,data.length,true);
+    lv.setUint16(26,name.length,true); lv.setUint16(28,0,true);
+    lh.set(name,30);
+    parts.push(lh,data);
+    const ch=new Uint8Array(46+name.length), cv=new DataView(ch.buffer);
+    cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true);
+    cv.setUint16(8,0x0800,true); cv.setUint16(10,0,true); cv.setUint16(12,dosTime,true);
+    cv.setUint16(14,dosDate,true); cv.setUint32(16,crc,true); cv.setUint32(20,data.length,true);
+    cv.setUint32(24,data.length,true); cv.setUint16(28,name.length,true);
+    cv.setUint16(30,0,true); cv.setUint16(32,0,true); cv.setUint16(34,0,true); cv.setUint16(36,0,true);
+    cv.setUint32(38,0,true); cv.setUint32(42,offset,true);
+    ch.set(name,46);
+    central.push(ch);
+    offset+=lh.length+data.length;
+  });
+  const cdSize=central.reduce((n,c)=>n+c.length,0);
+  const eocd=new Uint8Array(22), ev=new DataView(eocd.buffer);
+  ev.setUint32(0,0x06054b50,true); ev.setUint16(4,0,true); ev.setUint16(6,0,true);
+  ev.setUint16(8,files.length,true); ev.setUint16(10,files.length,true);
+  ev.setUint32(12,cdSize,true); ev.setUint32(16,offset,true); ev.setUint16(20,0,true);
+  const out=new Uint8Array(offset+cdSize+22);
+  let pos=0;
+  parts.concat(central,[eocd]).forEach(p=>{out.set(p,pos);pos+=p.length;});
+  return out;
+}
+function xmlEsc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function colLetter(n){let s="";while(n>0){n--;s=String.fromCharCode(65+(n%26))+s;n=Math.floor(n/26);}return s;}
+function sheetXml(sheet){
+  let rowsXml="";
+  sheet.rows.forEach((row,ri)=>{
+    let cells="";
+    row.forEach((cell,ci)=>{
+      if(cell===null||cell===undefined||cell==="") return;
+      const ref=colLetter(ci+1)+(ri+1);
+      if(typeof cell==="number"&&isFinite(cell)){
+        cells+='<c r="'+ref+'"><v>'+cell+'</v></c>';
+      }else{
+        const bold=(typeof cell==="object"&&cell.b)?' s="1"':"";
+        const v=(typeof cell==="object")?cell.v:cell;
+        cells+='<c r="'+ref+'" t="inlineStr"'+bold+'><is><t xml:space="preserve">'+xmlEsc(v)+'</t></is></c>';
+      }
+    });
+    rowsXml+='<row r="'+(ri+1)+'">'+cells+'</row>';
+  });
+  const cols=(sheet.cols&&sheet.cols.length)
+    ? '<cols>'+sheet.cols.map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join("")+'</cols>'
+    : "";
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+    '<sheetViews><sheetView workbookViewId="0"/></sheetViews>'+cols+'<sheetData>'+rowsXml+'</sheetData></worksheet>';
+}
+const STYLES_XML='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+  '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+  '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>'+
+  '<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>'+
+  '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'+
+  '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'+
+  '<cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'+
+  '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs>'+
+  '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+function buildXlsx(sheets){
+  const enc=new TextEncoder(), files=[];
+  files.push({name:"[Content_Types].xml",data:enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+    '<Default Extension="xml" ContentType="application/xml"/>'+
+    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+
+    '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+
+    sheets.map((s,i)=>'<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join("")+
+    '</Types>')});
+  files.push({name:"_rels/.rels",data:enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'+
+    '</Relationships>')});
+  files.push({name:"xl/workbook.xml",data:enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+    '<sheets>'+sheets.map((s,i)=>'<sheet name="'+xmlEsc(s.name)+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>').join("")+'</sheets></workbook>')});
+  files.push({name:"xl/_rels/workbook.xml.rels",data:enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    sheets.map((s,i)=>'<Relationship Id="rId'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>').join("")+
+    '<Relationship Id="rId'+(sheets.length+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'+
+    '</Relationships>')});
+  files.push({name:"xl/styles.xml",data:enc.encode(STYLES_XML)});
+  sheets.forEach((s,i)=>files.push({name:"xl/worksheets/sheet"+(i+1)+".xml",data:enc.encode(sheetXml(s))}));
+  return zipStore(files);
+}
+/* XLSX-END */
+
+/* ═══════════════════════════════════════════════
+   10. 报告内容与写盘
+   ═══════════════════════════════════════════════ */
+function buildReport(res){
+  const b=budgetsOf(S.mods);
+  const mt=res.modTime;
+  const modNames=S.mods.map(k=>MODS[k].name).join(" + ");
+  const now=new Date();
+  const p=n=>String(n).padStart(2,"0");
+  const ts=now.getFullYear()+p(now.getMonth()+1)+p(now.getDate())+"_"+p(now.getHours())+p(now.getMinutes())+p(now.getSeconds());
+  const filename="真题练习报告_"+S.year+"年_"+(S.mods.length===3?"全模块":S.mods.map(k=>MODS[k].name).join("+"))+"_"+ts+".xlsx";
+  const B=v=>({v,b:true});
+
+  /* Sheet1 概览 */
+  const vT=verdict(res.timeMs/60000,b.total);
+  const overview=[
+    [B("管综真题答题卡训练报告 · 概览")],
+    [],
+    ["报告生成时间",fmtDate(now.toISOString())],
+    ["试卷年份",S.year+" 年管理类联考综合能力真题"],
+    ["选择模块",modNames],
+    ["题量",res.total.n+" 题（"+S.mods.map(k=>MODS[k].name+" "+(MODS[k].to-MODS[k].from+1)+" 题").join("、")+"）"],
+    [],
+    ["开始答题时间",fmtDate(S.startedAt)],
+    ["交卷时间",fmtDate(S.submittedAt)],
+    ["全局暂停次数",S.timer.pauseCount+" 次"],
+    ["总思考用时",fmtClock(res.timeMs)+"（= 各题思考用时之和）"],
+    ["总用时判定","优秀 "+b.total.target+"min / 上限 "+b.total.limit+"min → "+vT.text],
+    [],
+    [B("各模块用时与目标")]
+  ];
+  if(b.math){
+    const mm=(mt.ps+mt.ds)/60000;
+    overview.push(["数学（问题求解+条件充分性判断）",fmtClock(mm*60000)+"（优秀 "+b.math.target+"min / 上限 "+b.math.limit+"min → "+verdict(mm,b.math).text+"）"]);
+  }
+  if(b.logic){
+    const lm=mt.lr/60000;
+    overview.push(["逻辑推理",fmtClock(lm*60000)+"（优秀 "+b.logic.target+"min / 上限 "+b.logic.limit+"min → "+verdict(lm,b.logic).text+"）"]);
+  }
+  overview.push([]);
+  overview.push([B("得分情况")]);
+  S.mods.forEach(k=>{
+    const r=res.byMod[k];
+    const modRows=res.rows.filter(x=>x.mod===k);
+    overview.push([r.name,"正确 "+r.correct+"/"+r.n+" · 得分 "+r.got+"/"+r.max+" · 正确率 "+(r.n?Math.round(r.correct/r.n*100):0)+"% · 标注 "+r.guessed+" 题："+(markSummary(modRows)||"—")+"（对 "+r.guessedCorrect+"）"]);
+  });
+  overview.push(["合计","正确 "+res.total.correct+"/"+res.total.n+" · 得分 "+res.total.got+"/"+res.total.max+" · 未作答 "+(res.total.n-res.total.answered)+" · 标注 "+res.total.guessed+" 题："+(markSummary(res.rows)||"—")+"（对 "+res.total.guessedCorrect+"）"]);
+  overview.push([]);
+  overview.push([B("说明")]);
+  overview.push(["本题用时口径","本题用时 = 该题各思考段之和（可断续多段：跳过暂停本题计时并转下一题，继续接着计时，选出答案即停，再点「继续」可再研究）。"]);
+  overview.push(["总用时口径","总思考用时 = 全部题思考用时之和（同一时刻只有一题在计时，因此与卷面实际用时一致）。全局「暂停」所有题一起冻结，不计入。"]);
+  overview.push(["标注","与 A—E 选项相互独立的标注按钮，每题可标注「猜的 / 凭推理 / 凭感觉」其一（再点同一标注取消，点另一标注可更换），用于标记因不会/没时间而瞎蒙的答案及蒙答案的依据。"]);
+
+  /* Sheet2 答题对比 */
+  const cmp=[[B("题号"),B("模块"),B("我的答案"),B("标注"),B("参考答案"),B("判定"),B("分值"),B("得分"),B("本题用时(秒)"),B("思考段数")]];
+  res.rows.forEach(r=>{
+    cmp.push([r.q,r.modName,r.mine||"未作答",r.mark?markLabel(r.mark):"",r.ref,r.ok===null?"未作答":(r.ok?"正确":"错误"),r.score,r.got,
+      Math.round(r.dur/1000), r.segs>0?r.segs+(r.skips>0?"·跳过"+r.skips+"次":""):""]);
+  });
+  cmp.push([]);
+  cmp.push([B("合计"),"",res.total.answered+" 题作答",res.total.guessed+" 题标注",res.total.correct+" 题正确",res.total.max,res.total.got,Math.round(res.timeMs/1000),"各题思考用时之和"]);
+
+  /* Sheet3 用时明细（按思考段 + 按题汇总 + 模块小计） */
+  const timing=[[B("段序"),B("题号"),B("模块"),B("阶段"),B("本段用时(秒)"),B("本段用时(分:秒)"),B("累计思考(分:秒)")]];
+  segRows().forEach((s,i)=>{
+    timing.push([i+1,s.q,MODS[qModule(s.q)].name,s.stage,Math.round(s.dur/1000),fmtClock(s.dur),fmtClock(s.at)]);
+  });
+  timing.push([]);
+  timing.push([B("按题汇总"),B("模块"),B("思考段数"),B("跳过次数"),B("本题用时(秒)"),B("本题用时(分:秒)"),B("标注")]);
+  res.rows.forEach(r=>{
+    if(r.segs<=0) return;
+    timing.push([r.q,r.modName,r.segs,r.skips,Math.round(r.dur/1000),fmtClock(r.dur),r.mark?markLabel(r.mark):""]);
+  });
+  timing.push([]);
+  timing.push([B("总思考用时"),"",Math.round(res.timeMs/1000),fmtClock(res.timeMs),"= 各题思考用时之和"]);
+  timing.push([]);
+  timing.push([B("模块用时小计"),B("已答题数"),B("用时(分:秒)"),B("优秀线(min)"),B("上限(min)"),B("判定")]);
+  if(b.math){
+    const mm=(mt.ps+mt.ds)/60000;
+    timing.push(["数学（问题求解+条件充分性判断）",(res.byMod.ps.answered+res.byMod.ds.answered)+"/"+(res.byMod.ps.n+res.byMod.ds.n),fmtClock(mm*60000),b.math.target,b.math.limit,verdict(mm,b.math).text]);
+  }
+  if(b.logic){
+    const lm=mt.lr/60000;
+    timing.push(["逻辑推理",res.byMod.lr.answered+"/"+res.byMod.lr.n,fmtClock(lm*60000),b.logic.target,b.logic.limit,verdict(lm,b.logic).text]);
+  }
+
+  return {filename, sheets:[
+    {name:"概览", cols:[26,78], rows:overview},
+    {name:"答题对比", cols:[8,22,12,10,12,10,8,8,14,14], rows:cmp},
+    {name:"用时明细", cols:[8,8,24,10,14,16,16,12], rows:timing}
+  ]};
+}
+
+/* IndexedDB：记住报告目录句柄 */
+function idbOpen(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open("mgzb_answer_db",1);
+    r.onupgradeneeded=()=>r.result.createObjectStore("kv");
+    r.onsuccess=()=>res(r.result);
+    r.onerror=()=>rej(r.error);
+  });
+}
+async function idbSet(k,v){
+  const db=await idbOpen();
+  return new Promise((res,rej)=>{
+    const tx=db.transaction("kv","readwrite");
+    tx.objectStore("kv").put(v,k);
+    tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error);
+  });
+}
+async function idbGet(k){
+  const db=await idbOpen();
+  return new Promise((res,rej)=>{
+    const rq=db.transaction("kv","readonly").objectStore("kv").get(k);
+    rq.onsuccess=()=>res(rq.result); rq.onerror=()=>rej(rq.error);
+  });
+}
+function downloadBlob(bytes, filename){
+  const blob=new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download=filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},800);
+}
+async function writeReportToFolder(bytes, filename){
+  // 自动化环境不弹系统文件夹选择框，直接走下载兜底
+  if(!window.showDirectoryPicker || navigator.webdriver) throw new Error("no-fsa");
+  let dir=null;
+  try{
+    const saved=await idbGet("reportDir");
+    if(saved){
+      if(saved.queryPermission && (await saved.queryPermission({mode:"readwrite"}))==="granted") dir=saved;
+      else if(saved.requestPermission && (await saved.requestPermission({mode:"readwrite"}))==="granted") dir=saved;
+    }
+  }catch(e){ /* 保存的句柄失效则重新选择 */ }
+  if(!dir) dir=await window.showDirectoryPicker({mode:"readwrite",id:"mgzb-report-dir"});
+  await idbSet("reportDir",dir);
+  const fh=await dir.getFileHandle(filename,{create:true});
+  const w=await fh.createWritable();
+  await w.write(bytes);
+  await w.close();
+  return dir.name;
+}
+async function exportReport(){
+  const res=S._result||computeResult();
+  const {filename,sheets}=buildReport(res);
+  const bytes=buildXlsx(sheets);
+  try{
+    const dirName=await writeReportToFolder(bytes,filename);
+    showToast("报告已保存："+filename);
+    document.getElementById("export-note").textContent=
+      "报告文件："+filename+"（已写入文件夹 "+dirName+"）";
+    return true;
+  }catch(e){
+    if(e && e.name==="AbortError"){
+      showToast("已取消选择文件夹，报告未保存");
+      return false;
+    }
+    downloadBlob(bytes,filename);
+    showToast("浏览器不支持直接写文件夹，已改为下载："+filename);
+    document.getElementById("export-note").textContent=
+      "报告文件："+filename+"（已下载）。若需直接写入指定文件夹，请用 Chrome/Edge 打开本页，并在弹出的文件夹选择框中选中目标文件夹。";
+    return true;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   11. 流程控制
+   ═══════════════════════════════════════════════ */
+function showView(id){
+  ["view-setup","view-exam","view-result"].forEach(v=>{
+    document.getElementById(v).hidden = (v!==id);
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function showToast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.hidden=false;
+  clearTimeout(t._h);
+  t._h=setTimeout(()=>{t.hidden=true;},3600);
+}
+function startPractice(){
+  if(selMods.length===0){ showToast("请至少选择一个模块"); return; }
+  S=newSession(selYear,selMods);
+  const firstQ=MODS[S.mods[0]].from;
+  S.currentQ=firstQ;
+  startSeg(firstQ);
+  startTimer();
+  saveSession();
+  showView("view-exam");
+  renderExam();
+  renderTimer();
+  runTicker();
+}
+function runTicker(){
+  clearInterval(tickHandle);
+  tickHandle=setInterval(()=>{
+    renderTimer();
+    if(Date.now()-lastSaveAt>5000) saveSession();
+  },250);
+}
+function doPause(){
+  // 全局暂停：把当前思考段结算掉，恢复时再续
+  let held=null;
+  if(S.focus){
+    held=S.focus.q;
+    const d=closeSeg();
+    if(d!==undefined){
+      S.segs.push({q:held, stage:S.answers[held]?"研究":"思考", d});
+      S.segTotal[held]=(S.segTotal[held]||0)+d;
+    }
+    S.currentQ=null;
+    S.pausedFocusQ=held;
+  }
+  pauseTimer(false);
+  renderAllQRows();
+  renderFocus();
+  document.getElementById("pause-veil").hidden=false;
+  document.getElementById("btn-pause").textContent="已暂停";
+  saveSession();
+}
+function doResume(){
+  resumeTimer();
+  if(S.pausedFocusQ!==undefined && S.pausedFocusQ!==null){
+    S.currentQ=S.pausedFocusQ;
+    startSeg(S.pausedFocusQ);
+    S.pausedFocusQ=null;
+  }
+  document.getElementById("pause-veil").hidden=true;
+  document.getElementById("btn-pause").textContent="暂停计时";
+  renderAllQRows();
+  renderFocus();
+  renderTimer();
+}
+function openConfirm(title, text){
+  return new Promise(res=>{
+    const modal=document.getElementById("confirm-modal");
+    document.getElementById("cf-title").textContent=title;
+    document.getElementById("cf-text").textContent=text;
+    modal.hidden=false;
+    const done=v=>{
+      modal.hidden=true;
+      document.getElementById("cf-ok").removeEventListener("click",onOk);
+      document.getElementById("cf-cancel").removeEventListener("click",onNo);
+      res(v);
+    };
+    const onOk=()=>done(true), onNo=()=>done(false);
+    document.getElementById("cf-ok").addEventListener("click",onOk);
+    document.getElementById("cf-cancel").addEventListener("click",onNo);
+  });
+}
+async function doSubmit(){
+  const unanswered=S.mods.reduce((n,k)=>n+(MODS[k].to-MODS[k].from+1),0)-Object.keys(S.answers).length;
+  if(unanswered>0){
+    const ok=await openConfirm("确认交卷？","还有 "+unanswered+" 题未作答。交卷后将立即对答案并生成 xlsx 报告。");
+    if(!ok) return;
+  }
+  // 结算仍在计时的思考段，保证报告完整
+  if(S.focus){
+    const held=S.focus.q;
+    const d=closeSeg();
+    if(d!==undefined){
+      S.segs.push({q:held, stage:S.answers[held]?"研究":"思考", d});
+      S.segTotal[held]=(S.segTotal[held]||0)+d;
+    }
+  }
+  S.currentQ=null;
+  S.pausedFocusQ=null;
+  pauseTimer(true);
+  S.submittedAt=new Date().toISOString();
+  S._result=computeResult();
+  saveSession();
+  document.getElementById("pause-veil").hidden=true;
+  clearInterval(tickHandle);
+  renderResult(S._result);
+  showView("view-result");
+  exportReport();
+}
+function restoreSession(){
+  S=loadSession();
+  if(!S) return;
+  if(S.submittedAt){ clearSession(); S=null; return; }
+  // 兼容旧版会话结构
+  if(!S.segs) S.segs=[];
+  if(!S.segTotal) S.segTotal={};
+  if(!S.guesses) S.guesses={};
+  // 旧版标注为布尔 true，统一迁移为 "guess"
+  Object.keys(S.guesses).forEach(q=>{
+    const v=S.guesses[q];
+    if(v===true) S.guesses[q]="guess";
+    else if(!MARKS.some(m=>m.key===v)) delete S.guesses[q];
+  });
+  S.mods=normMods(S.mods);
+  const total=S.mods.reduce((n,k)=>n+(MODS[k].to-MODS[k].from+1),0);
+  const stale=(Date.now()-(S.timer.lastSeen||0))>15000;
+  if(stale && S.focus){
+    // 关页/刷新造成的离线时间不计入本题（按暂停处理）
+    const held=S.focus.q;
+    const d=Math.max(0,(S.timer.lastSeen||Date.now())-S.focus.start);
+    S.focus=null; S.currentQ=null; S.pausedFocusQ=held;
+    if(d>0){
+      S.segs.push({q:held, stage:S.answers[held]?"研究":"思考", d});
+      S.segTotal[held]=(S.segTotal[held]||0)+d;
+    }
+  }
+  if(stale && S.timer.running){
+    S.timer.accum=Math.max(0,(S.timer.lastSeen||Date.now())-S.timer.runStart)+S.timer.accum;
+    S.timer.running=false;
+  }
+  saveSession();
+  document.getElementById("restore-text").innerHTML=
+    "检测到未完成的练习：<b>"+S.year+" 年真题</b> · "+S.mods.map(k=>MODS[k].name).join("、")+
+    " · 已答 "+Object.keys(S.answers).length+"/"+total+" 题 · 总思考用时 "+fmtClock(qTotalMs())+
+    (S.timer.running?"":"（计时已自动暂停）");
+  document.getElementById("restore-banner").hidden=false;
+}
+function continueRestored(){
+  document.getElementById("restore-banner").hidden=true;
+  if(!S.timer.running){ document.getElementById("btn-pause").textContent="已暂停"; }
+  showView("view-exam");
+  renderExam();
+  renderTimer();
+  runTicker();
+  if(!S.timer.running){ document.getElementById("pause-veil").hidden=false; }
+}
+
+/* ═══════════════════════════════════════════════
+   12. 启动
+   ═══════════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded",()=>{
+  renderSetup();
+  restoreSession();
+
+  document.getElementById("btn-start").addEventListener("click",startPractice);
+  document.getElementById("btn-pause").addEventListener("click",doPause);
+  document.getElementById("btn-resume").addEventListener("click",doResume);
+  document.getElementById("btn-submit").addEventListener("click",doSubmit);
+  document.getElementById("btn-export").addEventListener("click",exportReport);
+  document.getElementById("btn-again").addEventListener("click",()=>{
+    clearSession(); S=null;
+    document.getElementById("restore-banner").hidden=true;
+    showView("view-setup"); renderSetup();
+  });
+  document.getElementById("btn-back").addEventListener("click",()=>{
+    clearSession(); S=null;
+    document.getElementById("restore-banner").hidden=true;
+    showView("view-setup"); renderSetup();
+  });
+  document.getElementById("btn-restore").addEventListener("click",continueRestored);
+  document.getElementById("btn-discard").addEventListener("click",()=>{
+    clearSession(); S=null;
+    document.getElementById("restore-banner").hidden=true;
+  });
+  document.addEventListener("visibilitychange",()=>{
+    if(document.hidden && S && S.timer.running) saveSession();
+  });
+  window.addEventListener("beforeunload",()=>{
+    if(S && S.timer.running) saveSession();
+  });
+});
+</script>
+</body>
+</html>
