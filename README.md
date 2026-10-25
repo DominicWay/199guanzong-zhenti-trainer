@@ -2,7 +2,7 @@
 
 > 单文件、纯前端、离线可用的管综真题答题卡 + 计时训练工具。选好年份和模块就能模拟作答，交卷自动出 xlsx 用时与准确率报告。
 
-**在线使用**：开启 GitHub Pages 后访问 `https://<你的GitHub用户名>.github.io/199guanzong-zhenti-trainer/`（浏览器直接打开，无需安装）
+**在线使用**：<https://dominicway.github.io/199guanzong-zhenti-trainer/>（GitHub Pages，浏览器直接打开，无需安装）
 
 ## 这是什么
 
